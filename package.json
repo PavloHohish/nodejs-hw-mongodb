@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint src/**/*.js",
-    "dev": "nodemon src/index.js"
+    "start": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
