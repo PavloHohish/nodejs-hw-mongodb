@@ -12,31 +12,30 @@ export const getContacts = async ({
   filter = {},
 }) => {
   const skip = (page - 1) * perPage;
-  const contactsQuery = ContactCollection.find();
+  const contactQuery = ContactCollection.find();
 
   if (filter.isFavourite !== undefined) {
-    console.log(filter);
-    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+    contactQuery.where('isFavourite').equals(filter.isFavourite);
   }
   if (filter.type) {
-    contactsQuery.where('contactType').equals(filter.type);
+    contactQuery.where('contactType').equals(filter.type);
   }
 
-  const contacts = await contactsQuery
+  const count = await ContactCollection.find()
+    .merge(contactQuery)
+    .countDocuments();
+
+  const contacts = await contactQuery
     .skip(skip)
     .limit(perPage)
     .sort({ [sortBy]: sortOrder });
 
-  const count = await ContactCollection.find()
-    .merge(contactsQuery)
-    .countDocuments();
-
   const paginationData = calculatePaginationData({ count, perPage, page });
 
   return {
+    data: contacts,
     page,
     perPage,
-    contacts,
     totalItems: count,
     ...paginationData,
   };
