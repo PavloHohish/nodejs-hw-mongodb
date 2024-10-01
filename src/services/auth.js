@@ -69,7 +69,7 @@ export const login = async (payload) => {
 export const findSessionByAccessToken = (accessToken) =>
   SessionCollection.findOne({ accessToken });
 
-export const findUser = (filter) => SessionCollection.findOne(filter);
+export const findUser = (filter) => UserCollection.findOne(filter);
 
 export const refreshSession = async ({ refreshToken, sessionId }) => {
   const oldSession = await SessionCollection.findOne({

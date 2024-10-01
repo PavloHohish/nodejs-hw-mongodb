@@ -19,6 +19,7 @@ export const getContactsController = async (req, res) => {
   const filter = parseContactFilterParams(req.query);
 
   const { _id: userId } = req.user;
+  console.log(req.user);
 
   const data = await getContacts({
     perPage,
