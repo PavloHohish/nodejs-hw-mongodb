@@ -15,10 +15,13 @@ export const getContacts = async ({
   const contactQuery = ContactCollection.find();
 
   if (filter.isFavourite !== undefined) {
-    contactQuery.where('isFavourite').equals(filter.isFavourite);
+    contactQuery.where('isFavourite').eq(filter.isFavourite);
   }
   if (filter.type) {
-    contactQuery.where('contactType').equals(filter.type);
+    contactQuery.where('contactType').eq(filter.type);
+  }
+  if (filter.userId) {
+    contactQuery.where('userId').eq(filter.userId);
   }
 
   const count = await ContactCollection.find()
@@ -41,8 +44,8 @@ export const getContacts = async ({
   };
 };
 
-export const getContactById = async (id) => {
-  const contact = await ContactCollection.findById(id);
+export const getContact = async (filter) => {
+  const contact = await ContactCollection.findById(filter);
   return contact;
 };
 
