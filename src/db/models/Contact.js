@@ -27,6 +27,9 @@ const contactSchema = new Schema(
       required: true,
       enum: contactTypeList,
     },
+    photo: {
+      type: String,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'user',
