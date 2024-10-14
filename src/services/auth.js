@@ -12,6 +12,7 @@ import SessionCollection from '../db/models/Session.js';
 import { SMTP, TEMPLATES_DIR } from '../constants/index.js';
 import { env } from '../utils/env.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import { validateCode } from '../utils/googleOAuth2.js';
 
 import {
   accessTokenLifetime,
@@ -63,6 +64,35 @@ export const login = async (payload) => {
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
     throw createHttpError(401, 'Email or password invalid');
+  }
+
+  await SessionCollection.deleteOne({ userId: user._id });
+
+  const sessionData = createSession();
+
+  const userSession = await SessionCollection.create({
+    userId: user._id,
+    ...sessionData,
+  });
+
+  return userSession;
+};
+
+export const loginOrRegisterWithGoogleOAuth = async (code) => {
+  const loginTicket = await validateCode(code);
+  const payload = loginTicket.getPayload();
+
+  let user = await UserCollection.findOne({ email: payload.email });
+
+  if (!user) {
+    const password = randomBytes(10);
+    const hashPassword = await bcrypt.hash(password, 10);
+    user = await UserCollection.create({
+      name: payload.name,
+      email: payload.email,
+      password: hashPassword,
+    });
+    delete user._doc.password;
   }
 
   await SessionCollection.deleteOne({ userId: user._id });
